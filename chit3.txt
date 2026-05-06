@@ -1,0 +1,43 @@
+CREATE TABLE Stud (
+    Roll NUMBER PRIMARY KEY,
+    Att NUMBER,        
+    Status VARCHAR2(2) 
+);
+INSERT INTO Stud VALUES (1, 60, NULL);
+INSERT INTO Stud VALUES (2, 80, NULL);
+INSERT INTO Stud VALUES (3, 75, NULL);
+
+COMMIT;
+DECLARE
+    rno NUMBER := &roll_no;
+    attendance NUMBER;
+BEGIN
+    -- Fetch attendance
+    SELECT Att INTO attendance
+    FROM Stud
+    WHERE Roll = rno;
+
+    -- Check condition
+    IF attendance < 75 THEN
+        UPDATE Stud
+        SET Status = 'D'
+        WHERE Roll = rno;
+
+        DBMS_OUTPUT.PUT_LINE('Term not granted');
+
+    ELSE
+        UPDATE Stud
+        SET Status = 'ND'
+        WHERE Roll = rno;
+
+        DBMS_OUTPUT.PUT_LINE('Term granted');
+    END IF;
+
+EXCEPTION
+    WHEN NO_DATA_FOUND THEN
+        DBMS_OUTPUT.PUT_LINE('Student not found');
+
+    WHEN OTHERS THEN
+        DBMS_OUTPUT.PUT_LINE('Error: ' || SQLERRM);
+END;
+/

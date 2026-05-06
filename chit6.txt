@@ -1,0 +1,46 @@
+CREATE TABLE Stud_Marks (
+    Name VARCHAR2(100),
+    Total_marks NUMBER
+);
+
+CREATE TABLE Result (
+    Roll NUMBER,
+    Name VARCHAR2(100),
+    Class VARCHAR2(50)
+);
+
+CREATE OR REPLACE PROCEDURE proc_Grade (
+    P_roll IN NUMBER,
+    P_name IN VARCHAR2,
+    P_marks IN NUMBER
+)
+IS
+    V_class VARCHAR2(50);
+BEGIN
+	Categorization logic
+    IF p_marks BETWEEN 990 AND 1500 THEN
+        V_class := ‘Distinction’;
+    ELSIF p_marks BETWEEN 900 AND 989 THEN
+        V_class := ‘First Class’;
+    ELSIF p_marks BETWEEN 825 AND 899 THEN
+        V_class := ‘Higher Second Class’;
+    ELSE
+        V_class := ‘No Class’;
+    END IF;
+
+	Insert result
+    INSERT INTO Result (Roll, Name, Class)
+    VALUES (p_roll, p_name, v_class);
+
+    COMMIT;
+END;
+/
+
+BEGIN
+    Proc_Grade(1, ‘Amit’, 1000);
+    Proc_Grade(2, ‘Neha’, 950);
+    Proc_Grade(3, ‘Ravi’, 870);
+    Proc_Grade(4, ‘Pooja’, 800);
+END;
+/
+

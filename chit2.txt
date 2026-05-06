@@ -1,0 +1,62 @@
+CREATE TABLE Borrower (
+    Rollin NUMBER,
+    Name VARCHAR2(50),
+    DateofIssue DATE,
+    NameofBook VARCHAR2(100),
+    Status CHAR(1)   -- 'I' = Issued, 'R' = Returned
+);
+CREATE TABLE Fine (
+    Roll_no NUMBER,
+    Date DATE,
+    Amt NUMBER
+);
+INSERT INTO Borrower 
+VALUES (1, ‘Rajat’, SYSDATE – 20, ‘DBMS’, ‘I’);
+
+INSERT INTO Borrower 
+VALUES (2, ‘Amit’, SYSDATE – 35, ‘Java’, ‘I’);
+
+COMMIT;
+DECLARE
+    rno NUMBER := &roll_no;
+    bname VARCHAR2(50) := '&book_name';
+    issue_date DATE;
+    days NUMBER;
+    fine NUMBER := 0;
+
+BEGIN
+    -- Get issue date
+    SELECT DateofIssue INTO issue_date
+    FROM Borrower
+    WHERE Rollin = rno 
+    AND NameofBook = bname
+    AND Status = 'I';
+
+    -- Calculate days
+    days := SYSDATE - issue_date;
+
+    -- Simple fine logic
+    IF days > 30 THEN
+        fine := days * 50;
+    ELSIF days >= 15 THEN
+        fine := days * 5;
+    END IF;
+
+    -- Insert fine if applicable
+    IF fine > 0 THEN
+        INSERT INTO Fine VALUES (rno, SYSDATE, fine);
+    END IF;
+
+    -- Update status
+    UPDATE Borrower
+    SET Status = 'R'
+    WHERE Rollin = rno AND NameofBook = bname;
+
+    DBMS_OUTPUT.PUT_LINE('Returned Successfully');
+    DBMS_OUTPUT.PUT_LINE('Fine = ' || fine);
+
+EXCEPTION
+    WHEN NO_DATA_FOUND THEN
+        DBMS_OUTPUT.PUT_LINE('Record not found');
+END;
+/
